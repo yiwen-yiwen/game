@@ -492,7 +492,7 @@
 </div>
 
 <script>
-const API_BASE = '';
+const API_BASE = window.location.origin;
 let gameId = localStorage.getItem('gameId');
 let gameState = null;
 
@@ -501,7 +501,7 @@ const BG_IMAGES = {
   loading: 'images/library.png',
   game_day: 'images/classroom.png',
   game_night: 'images/night.png',
-  ending_pass: 'images/cover.png',
+  ending_pass: 'images/last_page.png',
   ending_fail: 'images/dormitory.png'
 };
 
@@ -516,10 +516,6 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
-// 首页
-setBg('home');
-if (gameId) document.getElementById('btn-continue').style.display = 'block';
 
 async function newGame() {
   const res = await fetch(`${API_BASE}/api/game/new`, { method: 'POST' });
@@ -539,7 +535,6 @@ function continueGame() {
   showLoading();
 }
 
-// 加载页
 function showLoading() {
   setBg('loading');
   showPage('page-loading');
@@ -557,7 +552,6 @@ function showLoading() {
   }, 300);
 }
 
-// 游戏页
 async function enterGame() {
   if (!gameState) {
     const res = await fetch(`${API_BASE}/api/game/${gameId}`);
@@ -663,7 +657,6 @@ async function handleMidnight() {
   document.getElementById('result-panel').style.display = 'none';
 }
 
-// 结局页
 function showEnding(ending) {
   const s = gameState;
   const isPass = ending === 'pass';
@@ -691,6 +684,13 @@ function restartGame() {
   setBg('home');
   showPage('page-home');
 }
+
+function showCharacter() {
+  alert('角色功能开发中...');
+}
+
+setBg('home');
+if (gameId) document.getElementById('btn-continue').style.display = 'block';
 
 // 角色按钮点击事件
 function showCharacter() {
