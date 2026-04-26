@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大学生期末求生模拟器</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2c3e50;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      transition: background-image 0.8s ease;
+    }
+    .container {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 8px 32px rgba(31,38,135,0.15);
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    h1 { font-size: 26px; text-align: center; margin-bottom: 8px; }
+    .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 32px; font-size: 14px; }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.3); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.9);
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+    .btn-secondary:hover { background: #667eea; color: white; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .stats { display: flex; flex-direction: column; gap: 16px; margin: 24px 0; }
+    .stat-item { display: flex; flex-direction: column; gap: 6px; }
+    .stat-label { font-size: 13px; color: #7f8c8d; }
+    .progress-bg {
+      width: 100%; height: 10px; background: rgba(0,0,0,0.05); border-radius: 5px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 5px; transition: width 0.5s;
+    }
+    .energy { background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%); }
+    .study { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); }
+    .time-display { text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+    .event-btn { margin-top: 8px; }
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 20px; z-index: 100;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: rgba(255,255,255,0.95); border-radius: 24px; padding: 32px;
+      max-width: 420px; width: 100%; text-align: center;
+    }
+    .event-option {
+      background: rgba(255,255,255,0.95); border: 2px solid transparent;
+      border-radius: 16px; padding: 16px 20px; margin-bottom: 12px;
+      cursor: pointer; text-align: left; transition: all 0.3s;
+      display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 4px 12px rgba(31,38,135,0.08);
+    }
+    .event-option:hover {
+      border-color: #667eea; background: rgba(255,255,255,1);
+      transform: translateY(-2px); box-shadow: 0 8px 20px rgba(31,38,135,0.12);
+    }
+    .event-icon { font-size: 36px; line-height: 1; flex-shrink: 0; }
+    .event-info { display: flex; flex-direction: column; gap: 4px; }
+    .event-name { font-size: 16px; font-weight: 600; color: #667eea; }
+    .event-desc { font-size: 13px; color: #7f8c8d; }
+    .result-panel {
+      background: rgba(255,255,255,0.85); border-radius: 16px;
+      padding: 16px; margin-top: 16px; text-align: center;
+    }
+    .loading-bar { width: 100%; height: 12px; background: rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; margin: 24px 0; }
+    .loading-fill { height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border-radius: 6px; transition: width 0.3s; }
+    .ending-pass { background-size: cover; background-position: center; }
+    .ending-fail { background-size: cover; background-position: center; }
+    .coins { color: #f39c12; font-weight: 700; font-size: 18px; }
+    .home-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      overflow: hidden;
+    }
+    .home-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .home-buttons-overlay {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 220px;
+      z-index: 10;
+    }
+    .home-buttons-overlay .btn {
+      margin-bottom: 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .game-scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .energy-bar-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 200px;
+      z-index: 10;
+    }
+    .energy-bar-bg {
+      width: 100%;
+      height: 24px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .energy-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
+    }
+    .energy-label {
+      text-align: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 4px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .top-bar {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 0 180px;
+      z-index: 10;
+      gap: 16px;
+    }
+    .top-left, .top-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .time-display {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(12px);
+      padding: 10px 24px;
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c3e50;
+      box-shadow: 0 4px 16px rgba(31,38,135,0.1);
+      border: 1px solid rgba(255,255,255,0.6);
+      white-space: nowrap;
+    }
+    .study-bubble {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(12px);
+      padding: 12px 20px;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 16px rgba(31,38,135,0.1);
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    .study-label {
+      font-size: 13px;
+      color: #7f8c8d;
+      font-weight: 500;
+    }
+    .study-bar {
+      width: 120px;
+      height: 8px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .study-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4facfe;
+    }
+    .action-bubble {
+      cursor: pointer;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      box-shadow: 0 8px 24px rgba(102,126,234,0.4);
+    }
+    .action-bubble:hover {
+      transform: scale(1.08);
+      box-shadow: 0 12px 32px rgba(102,126,234,0.5);
+    }
+    .action-bubble .bubble-label {
+      color: rgba(255,255,255,0.9);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .action-bubble .bubble-icon {
+      font-size: 28px;
+    }
+    .result-panel {
+      position: absolute;
+      bottom: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(16px);
+      border-radius: 20px;
+      padding: 20px 32px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(31,38,135,0.15);
+      border: 1px solid rgba(255,255,255,0.6);
+      z-index: 20;
+    }
+    .corner-decoration {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .corner-decoration-tl {
+      top: 0;
+      left: 0;
+    }
+    .corner-decoration-tr {
+      top: 0;
+      right: 0;
+    }
+    .action-btn-img {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 280px;
+      height: 140px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      z-index: 10;
+    }
+    .action-btn-img:hover {
+      transform: scale(1.05);
+    }
+    .character-btn {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      width: 280px;
+      height: 140px;
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.3s;
+    }
+    .character-btn:hover {
+      transform: scale(1.05);
+    }
+    .day-display {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 32px;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.5), 0 0 20px rgba(102,126,234,0.8);
+      z-index: 10;
+      font-family: 'Impact', 'Arial Black', sans-serif;
+      letter-spacing: 2px;
+    }
+    .time-display-game {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 48px;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.5), 0 0 30px rgba(255,215,0,0.6);
+      z-index: 10;
+      font-family: 'Impact', 'Arial Black', sans-serif;
+      letter-spacing: 3px;
+    }
+    .energy-bar-container {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      z-index: 10;
+    }
+    .study-bar-container {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      z-index: 10;
+      text-align: center;
+    }
+    .study-bar-bg {
+      width: 100%;
+      height: 20px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .study-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 8px;
+      transition: width 0.5s ease;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
+    }
+    .study-label {
+      text-align: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 4px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+<!-- 首页 -->
+<div id="page-home" class="page active">
+  <div class="home-wrapper">
+    <img src="images/cover.png" alt="封面" class="home-image">
+    <div class="home-buttons-overlay">
+      <button class="btn btn-primary" onclick="newGame()">新游戏</button>
+      <button class="btn btn-secondary" id="btn-continue" onclick="continueGame()" style="display:none">继续游戏</button>
+    </div>
+  </div>
+</div>
+
+<!-- 加载页 -->
+<div id="page-loading" class="page">
+  <div class="container">
+    <h2 style="text-align:center;margin-bottom:24px">正在进入期末周...</h2>
+    <div class="loading-bar"><div class="loading-fill" id="loading-fill" style="width:0%"></div></div>
+    <p style="text-align:center;font-size:18px;font-weight:700;color:#667eea" id="loading-percent">0%</p>
+    <p style="text-align:center;color:#7f8c8d;font-size:14px" id="loading-tip">正在生成试卷...</p>
+  </div>
+</div>
+
+<!-- 游戏页 -->
+<div id="page-game" class="page">
+  <div class="game-scene">
+    <!-- 左上角装饰 -->
+    <img src="images/corner_decoration_top_left.png" class="corner-decoration corner-decoration-tl" alt="装饰">
+    <!-- 右上角装饰 -->
+    <img src="images/corner_decoration_top_right.png" class="corner-decoration corner-decoration-tr" alt="装饰">
+
+    <!-- 左上角：天数显示 -->
+    <div class="day-display" id="day-display">Day 1</div>
+    
+    <!-- 右上角：时间显示 -->
+    <div class="time-display-game" id="time-display">8:00</div>
+
+    <!-- 右上角：金币 -->
+    <div class="corner-bubble corner-tr">
+      <div class="bubble-icon">🪙</div>
+      <div class="bubble-label">金币</div>
+      <div class="bubble-value coins" id="val-coins">0</div>
+    </div>
+
+    <!-- 居中：精力进度条 -->
+    <div class="energy-bar-container">
+      <div class="energy-bar-bg">
+        <div class="energy-bar-fill" id="bar-energy" style="width:100%"></div>
+      </div>
+      <div class="energy-label">精力: <span id="val-energy">100</span>/100</div>
+    </div>
+
+    <!-- 居中偏下：复习进度条 -->
+    <div class="study-bar-container">
+      <div class="study-bar-bg">
+        <div class="study-bar-fill" id="bar-study" style="width:0%"></div>
+      </div>
+      <div class="study-label">📚 复习进度: <span id="val-study">0</span>%</div>
+    </div>
+
+    <!-- 左下角：角色按钮 -->
+    <img src="images/btn_character.png" class="character-btn" alt="角色" onclick="showCharacter()">
+
+    <!-- 右下角：行动按钮 -->
+    <img src="images/btn_action.png" class="action-btn-img" alt="选择行动" onclick="openEventModal()">
+
+    <!-- 结果面板 -->
+    <div class="result-panel" id="result-panel" style="display:none">
+      <p id="result-msg"></p>
+      <p id="random-event-msg" style="color:#667eea;font-weight:600;margin-top:8px"></p>
+    </div>
+  </div>
+</div>
+
+<!-- 结局页 -->
+<div id="page-ending" class="page">
+  <div class="home-wrapper">
+    <img src="images/last_page.png" alt="结局" class="home-image">
+    <div class="home-buttons-overlay" style="bottom: 80px;">
+      <div class="container" id="ending-container" style="background: rgba(255,255,255,0.9); padding: 24px; max-width: 400px;">
+        <h1 id="ending-title" style="margin-bottom:16px">考试通过！</h1>
+        <div style="font-size:48px;text-align:center;margin-bottom:16px" id="ending-icon">🎉</div>
+    <div class="stats" style="margin-bottom:24px">
+      <div class="stat-item" style="flex-direction:row;justify-content:space-between;padding:10px 16px;background:rgba(0,0,0,0.03);border-radius:10px">
+        <span class="stat-label">复习进度</span><span id="end-study">0/100</span>
+      </div>
+      <div class="stat-item" style="flex-direction:row;justify-content:space-between;padding:10px 16px;background:rgba(0,0,0,0.03);border-radius:10px">
+        <span class="stat-label">剩余精力</span><span id="end-energy">0/100</span>
+      </div>
+      <div class="stat-item" style="flex-direction:row;justify-content:space-between;padding:10px 16px;background:rgba(0,0,0,0.03);border-radius:10px">
+        <span class="stat-label">金币</span><span id="end-coins">0</span>
+      </div>
+    </div>
+        <p style="text-align:center;color:#7f8c8d;margin-bottom:24px" id="ending-desc">恭喜你！经过不懈努力，你成功通过了期末考试！</p>
+        <button class="btn btn-primary" onclick="restartGame()">重新开始</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 事件弹窗 -->
+<div class="modal" id="event-modal" onclick="closeEventModal(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <h3 style="margin-bottom:20px">选择行动（消耗4小时）</h3>
+    <div id="event-options"></div>
+    <button class="btn btn-secondary" onclick="closeEventModal()" style="margin-top:8px">取消</button>
+  </div>
+</div>
+
+<!-- 午夜弹窗 -->
+<div class="modal" id="midnight-modal">
+  <div class="modal-content">
+    <h3 style="margin-bottom:16px">午夜休息</h3>
+    <p style="color:#7f8c8d;margin-bottom:8px">时间到了午夜，你自动进入休息状态。</p>
+    <p style="color:#7f8c8d;margin-bottom:20px">精力恢复 80 点，进入新的一天。</p>
+    <button class="btn btn-primary" onclick="handleMidnight()">继续</button>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'http://127.0.0.1:8000';
+let gameId = localStorage.getItem('gameId');
+let gameState = null;
+
+const BG_IMAGES = {
+  home: 'images/cover.png',
+  loading: 'images/library.png',
+  game_day: 'images/classroom.png',
+  game_night: 'images/night.png',
+  ending_pass: 'images/cover.png',
+  ending_fail: 'images/dormitory.png'
+};
+
+const tips = ['正在生成试卷...','学霸正在复习...','室友正在打游戏...','咖啡机正在加热...','图书馆正在占座...','教授正在出题...'];
+
+function setBg(imageKey) {
+  const url = BG_IMAGES[imageKey];
+  if (url) document.body.style.backgroundImage = `url('${url}')`;
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// 首页
+setBg('home');
+if (gameId) document.getElementById('btn-continue').style.display = 'block';
+
+async function newGame() {
+  const res = await fetch(`${API_BASE}/api/game/new`, { method: 'POST' });
+  const data = await res.json();
+  gameId = data.game_id;
+  gameState = data.state;
+  localStorage.setItem('gameId', gameId);
+  localStorage.setItem('gameState', JSON.stringify(gameState));
+  showLoading();
+}
+
+function continueGame() {
+  const savedState = localStorage.getItem('gameState');
+  if (savedState) {
+    gameState = JSON.parse(savedState);
+  }
+  showLoading();
+}
+
+// 加载页
+function showLoading() {
+  setBg('loading');
+  showPage('page-loading');
+  let progress = 0;
+  document.getElementById('loading-tip').textContent = tips[Math.floor(Math.random() * tips.length)];
+  const interval = setInterval(() => {
+    progress += Math.random() * 15 + 5;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      setTimeout(() => enterGame(), 500);
+    }
+    document.getElementById('loading-fill').style.width = progress + '%';
+    document.getElementById('loading-percent').textContent = Math.round(progress) + '%';
+  }, 300);
+}
+
+// 游戏页
+async function enterGame() {
+  if (!gameState) {
+    const res = await fetch(`${API_BASE}/api/game/${gameId}`);
+    gameState = await res.json();
+  }
+  const isDay = gameState.hour >= 8 && gameState.hour < 20;
+  setBg(isDay ? 'game_day' : 'game_night');
+  updateGameUI();
+  showPage('page-game');
+  if (gameState.is_midnight_rest) {
+    document.getElementById('midnight-modal').classList.add('active');
+  }
+}
+
+function updateGameUI() {
+  const s = gameState;
+  document.getElementById('day-display').textContent = `Day ${s.day}`;
+  document.getElementById('time-display').textContent = `${s.hour}:00`;
+  document.getElementById('val-energy').textContent = s.energy;
+  document.getElementById('bar-energy').style.width = s.energy + '%';
+  document.getElementById('val-study').textContent = s.study_progress;
+  document.getElementById('bar-study').style.width = s.study_progress + '%';
+  document.getElementById('val-coins').textContent = s.coins;
+}
+
+function openEventModal() {
+  if (!gameState) {
+    console.error('gameState is undefined');
+    return;
+  }
+  const hour = gameState.hour;
+  const isDay = hour >= 8 && hour < 20;
+  const options = isDay
+    ? [
+        { id: 'review', icon: '📖', name: '复习', desc: '复习进度 +5，精力 -30' },
+        { id: 'go_out', icon: '🚪', name: '外出', desc: '精力 -30，可能触发随机事件' }
+      ]
+    : [
+        { id: 'sleep', icon: '😴', name: '睡觉', desc: '精力 +20' },
+        { id: 'go_out', icon: '🚪', name: '外出', desc: '精力 -30，可能触发随机事件' }
+      ];
+  const html = options.map(o => `
+    <div class="event-option" onclick="chooseEvent('${o.id}')">
+      <div class="event-icon">${o.icon}</div>
+      <div class="event-info">
+        <span class="event-name">${o.name}</span>
+        <span class="event-desc">${o.desc}</span>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('event-options').innerHTML = html;
+  document.getElementById('event-modal').classList.add('active');
+}
+
+function closeEventModal(e) {
+  if (!e || e.target.id === 'event-modal') {
+    document.getElementById('event-modal').classList.remove('active');
+  }
+}
+
+async function chooseEvent(choice) {
+  closeEventModal();
+  if (!gameId) {
+    console.error('gameId is undefined');
+    return;
+  }
+  const res = await fetch(`${API_BASE}/api/game/${gameId}/event`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ choice })
+  });
+  const data = await res.json();
+  if (data.state) {
+    gameState = data.state;
+    localStorage.setItem('gameState', JSON.stringify(gameState));
+  }
+
+  if (gameState) {
+    const isDay = gameState.hour >= 8 && gameState.hour < 20;
+    setBg(isDay ? 'game_day' : 'game_night');
+    updateGameUI();
+  }
+
+  const r = data.result;
+  document.getElementById('result-panel').style.display = 'block';
+  document.getElementById('result-msg').textContent = r.message;
+  document.getElementById('random-event-msg').textContent = r.random_event ? r.random_event.message : '';
+
+  if (r.ending) {
+    setTimeout(() => showEnding(r.ending), 2000);
+  } else if (r.midnight_rest) {
+    setTimeout(() => document.getElementById('midnight-modal').classList.add('active'), 1000);
+  }
+}
+
+async function handleMidnight() {
+  document.getElementById('midnight-modal').classList.remove('active');
+  const res = await fetch(`${API_BASE}/api/game/${gameId}/midnight`, { method: 'POST' });
+  gameState = await res.json();
+  localStorage.setItem('gameState', JSON.stringify(gameState));
+  setBg('game_day');
+  updateGameUI();
+  document.getElementById('result-panel').style.display = 'none';
+}
+
+// 结局页
+function showEnding(ending) {
+  const s = gameState;
+  const isPass = ending === 'pass';
+  setBg(isPass ? 'ending_pass' : 'ending_fail');
+  document.body.className = isPass ? 'ending-pass' : 'ending-fail';
+  document.getElementById('ending-title').textContent = isPass ? '考试通过！' : '考试失败...';
+  document.getElementById('ending-icon').textContent = isPass ? '🎉' : '😭';
+  document.getElementById('end-study').textContent = s.study_progress + '/100';
+  document.getElementById('end-energy').textContent = s.energy + '/100';
+  document.getElementById('end-coins').textContent = s.coins;
+  document.getElementById('ending-desc').textContent = isPass
+    ? '恭喜你！经过不懈努力，你成功通过了期末考试！'
+    : '很遗憾，你的复习进度不足，期末考试挂科了...';
+  showPage('page-ending');
+}
+
+function restartGame() {
+  localStorage.removeItem('gameId');
+  localStorage.removeItem('gameState');
+  gameId = null;
+  gameState = null;
+  document.body.className = '';
+  document.getElementById('btn-continue').style.display = 'none';
+  document.getElementById('result-panel').style.display = 'none';
+  setBg('home');
+  showPage('page-home');
+}
+
+// 角色按钮点击事件
+function showCharacter() {
+  alert('角色功能开发中...');
+}
+</script>
+
+</body>
+</html>

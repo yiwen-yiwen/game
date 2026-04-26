@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏主界面 | 大学生期末求生模拟器</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="main-page">
+    <div class="main-container">
+        <div class="phase-header">
+            <div class="phase-badge" id="phaseBadge">期末预热</div>
+            <div class="day-counter">第 <span id="dayNum">1</span> 天</div>
+        </div>
+
+        <div class="stats-panel hidden" id="statsPanel">
+            <div class="stat-item">
+                <div class="stat-label">
+                    <span class="stat-icon">🧠</span>
+                    <span>精神状态</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill" id="mentalBar" style="width: 80%"></div>
+                </div>
+                <span class="stat-value" id="mentalValue">80</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">
+                    <span class="stat-icon">⚡</span>
+                    <span>精力值</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill" id="energyBar" style="width: 100%"></div>
+                </div>
+                <span class="stat-value" id="energyValue">100</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">
+                    <span class="stat-icon">📚</span>
+                    <span>复习进度</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill" id="reviewBar" style="width: 50%"></div>
+                </div>
+                <span class="stat-value" id="reviewValue">50</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">
+                    <span class="stat-icon">📝</span>
+                    <span>平时分</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-fill" id="scoreBar" style="width: 60%"></div>
+                </div>
+                <span class="stat-value" id="scoreValue">60</span>
+            </div>
+        </div>
+
+        <div class="time-selection">
+            <h3 class="time-title">选择时间段</h3>
+            <div class="time-buttons">
+                <button class="time-btn" data-time="morning" onclick="selectTime('morning')">
+                    <span class="time-icon">🌅</span>
+                    <span class="time-name">早晨</span>
+                    <span class="time-desc">8:00 - 12:00</span>
+                </button>
+                <button class="time-btn" data-time="noon" onclick="selectTime('noon')">
+                    <span class="time-icon">☀️</span>
+                    <span class="time-name">中午</span>
+                    <span class="time-desc">12:00 - 14:00</span>
+                </button>
+                <button class="time-btn" data-time="afternoon" onclick="selectTime('afternoon')">
+                    <span class="time-icon">🌤️</span>
+                    <span class="time-name">傍晚</span>
+                    <span class="time-desc">14:00 - 18:00</span>
+                </button>
+                <button class="time-btn" data-time="evening" onclick="selectTime('evening')">
+                    <span class="time-icon">🌙</span>
+                    <span class="time-name">深夜</span>
+                    <span class="time-desc">18:00 - 24:00</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/main.js"></script>
+    <script>
+        initMainPage();
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件 | 大学生期末求生模拟器</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="event-page">
+    <div class="event-container">
+        <div class="event-header">
+            <button class="btn-back" onclick="backToMain()">← 返回</button>
+            <div class="event-time-badge" id="eventTimeBadge">早晨</div>
+        </div>
+
+        <div class="event-content">
+            <div class="event-story-card">
+                <h2 class="event-title" id="eventTitle">事件标题</h2>
+                <p class="event-story" id="eventStory">事件剧情...</p>
+            </div>
+
+            <div class="event-choices" id="eventChoices">
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/main.js"></script>
+    <script>
+        initEventPage();
+    </script>
+</body>
+</html>

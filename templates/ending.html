@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>结局 | 大学生期末求生模拟器</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="ending-page">
+    <div class="ending-container">
+        <div class="ending-icon" id="endingIcon">🎓</div>
+        <h2 class="ending-label">期末结算</h2>
+        <h1 class="ending-title" id="endingTitle">结局名称</h1>
+        <p class="ending-desc" id="endingDesc">结局描述...</p>
+
+        <div class="ending-stats">
+            <div class="ending-stat">
+                <span class="ending-stat-icon">📚</span>
+                <span class="ending-stat-label">复习进度</span>
+                <span class="ending-stat-value" id="endReview">0</span>
+            </div>
+            <div class="ending-stat">
+                <span class="ending-stat-icon">🧠</span>
+                <span class="ending-stat-label">精神状态</span>
+                <span class="ending-stat-value" id="endMental">0</span>
+            </div>
+            <div class="ending-stat">
+                <span class="ending-stat-icon">⚡</span>
+                <span class="ending-stat-label">精力值</span>
+                <span class="ending-stat-value" id="endEnergy">0</span>
+            </div>
+            <div class="ending-stat">
+                <span class="ending-stat-icon">📝</span>
+                <span class="ending-stat-label">平时分</span>
+                <span class="ending-stat-value" id="endScore">0</span>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-large" onclick="restartGame()">
+            <span class="btn-text">重新开始</span>
+        </button>
+    </div>
+    <script src="/static/js/main.js"></script>
+    <script>
+        initEndingPage();
+    </script>
+</body>
+</html>

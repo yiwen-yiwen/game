@@ -1,0 +1,37 @@
+{
+  "day": 1,
+  "phase": "warmup",
+  "time_slot": "morning",
+  "review": 50,
+  "mental": 80,
+  "energy": 100,
+  "score": 60,
+  "stats_unlocked": false,
+  "history": [],
+  "game_over": false,
+  "ending": null,
+  "current_event": {
+    "title": "身体报警",
+    "story": "你突然感觉头晕目眩，可能是最近熬夜太多了...",
+    "choices": [
+      {
+        "text": "立刻休息",
+        "effects": {
+          "energy": 20,
+          "review": -10
+        },
+        "desc": "精力+20，复习-10"
+      },
+      {
+        "text": "硬撑过去",
+        "effects": {
+          "energy": -15,
+          "mental": -15,
+          "review": 5
+        },
+        "desc": "精力-15，精神-15，复习+5"
+      }
+    ],
+    "is_random": true
+  }
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>复习中 - 大学生期末求生模拟器</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: url('images/classroom.png') center/cover no-repeat;
+      color: #2c3e50;
+    }
+    .scene-card {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(31,38,135,0.15);
+      border: 1px solid rgba(255,255,255,0.6);
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .scene-icon { font-size: 72px; margin-bottom: 16px; }
+    .scene-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #667eea; }
+    .scene-desc { font-size: 15px; color: #7f8c8d; margin-bottom: 24px; line-height: 1.6; }
+    .effect-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .effect-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(102,126,234,0.08);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .effect-positive { color: #27ae60; font-weight: 600; }
+    .effect-negative { color: #e74c3c; font-weight: 600; }
+    .btn {
+      display: inline-block;
+      padding: 14px 40px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+      text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .loading { display: none; color: #667eea; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="scene-card">
+    <div class="scene-icon">📖</div>
+    <h1 class="scene-title">认真复习中</h1>
+    <p class="scene-desc">你翻开课本，沉浸在知识的海洋中...</p>
+    <div class="effect-list">
+      <div class="effect-item">
+        <span>📚 复习进度</span>
+        <span class="effect-positive">+5</span>
+      </div>
+      <div class="effect-item">
+        <span>⚡ 精力</span>
+        <span class="effect-negative">-30</span>
+      </div>
+      <div class="effect-item">
+        <span>⏰ 时间</span>
+        <span>消耗 4 小时</span>
+      </div>
+    </div>
+    <form onsubmit="return handleSubmit(event)">
+      <button type="submit" class="btn" id="confirmBtn">确认复习</button>
+    </form>
+    <p class="
